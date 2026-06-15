@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Atelier · Sélection privée de biens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+<style>
+  :root{
+    --navy:#0E2240;--navy-2:#16315a;--bronze:#B08D57;--paper:#FCFBF8;--ink:#0E2240;
+    --muted:#6E7079;--cream:#F4EFE6;--line:#E7E1D6;--bronze-soft:#F0E7D8;--ok:#5E7B57;--no:#B25B4B;
+    --serif:"Cormorant Garamond",Georgia,serif;--sans:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:var(--serif);font-weight:300;margin:0;line-height:1.06}
+  a{color:inherit;text-decoration:none}button{font-family:var(--sans);cursor:pointer}
+  input,textarea,select{font-family:var(--sans);font-size:15px;color:var(--ink);width:100%;background:#fff;border:1px solid var(--line);border-radius:2px;padding:12px 14px;outline:none;transition:border-color .15s,box-shadow .15s}
+  textarea{resize:vertical;line-height:1.55}
+  input:focus,textarea:focus,select:focus{border-color:var(--bronze);box-shadow:0 0 0 3px var(--bronze-soft)}
+  label.field{display:block;margin-bottom:16px}
+  label.field .lab{display:block;font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+  .eyebrow{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--bronze)}
+
+  .btn{display:inline-flex;align-items:center;gap:9px;border-radius:2px;border:1px solid transparent;padding:13px 24px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;transition:background .18s,border-color .18s,color .18s}
+  .btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--navy-2)}
+  .btn-bronze{background:var(--bronze);color:#fff}.btn-bronze:hover{background:#9c7b48}
+  .btn-ghost{background:transparent;color:var(--navy);border-color:var(--line)}.btn-ghost:hover{border-color:var(--bronze)}
+  .btn-sm{padding:9px 16px}
+  .icon-btn{border:1px solid var(--line);background:#fff;border-radius:2px;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);font-size:15px}
+  .icon-btn:hover{border-color:var(--bronze);color:var(--navy)}
+
+  .topbar{position:sticky;top:0;z-index:40;background:rgba(252,251,248,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .topbar-inner{max-width:1080px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .wordmark{font-family:var(--serif);font-size:23px}
+  .wordmark .sub{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--bronze);margin-top:2px}
+  .spacer{flex:1}
+  .modeswitch{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden;background:#fff}
+  .modeswitch button{border:none;background:transparent;padding:10px 18px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .modeswitch button.on{background:var(--navy);color:#fff}
+
+  .atelier-hero{background:var(--navy);color:var(--cream);padding:74px 28px 66px}
+  .atelier-hero .inner{max-width:1080px;margin:0 auto}
+  .atelier-hero .eyebrow{color:var(--bronze)}
+  .atelier-hero h1{color:#fff;font-size:clamp(34px,5.4vw,56px);margin-top:20px;max-width:18ch}
+  .atelier-hero p{color:rgba(244,239,230,.72);font-size:17px;max-width:54ch;margin-top:18px}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:54px 28px 110px}
+  .section-head{margin:0 0 26px}.section-head .eyebrow{display:block;margin-bottom:12px}
+  .section-head h2{font-size:clamp(26px,3.6vw,38px)}
+  .section+.section{margin-top:58px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:3px;padding:26px}
+  .hint{font-size:13.5px;color:var(--muted);margin-top:2px;max-width:64ch}
+  .row{display:flex;gap:10px;align-items:flex-end}.row .grow{flex:1}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 18px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:0 16px}
+  @media(max-width:640px){.grid2,.grid3,.grid4{grid-template-columns:1fr 1fr}}
+
+  .plist{display:flex;flex-direction:column;gap:18px;margin-top:8px}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .pcard-top{display:flex}
+  .pcard-thumb{width:172px;min-height:128px;background:var(--bronze-soft) center/cover no-repeat;flex-shrink:0;position:relative}
+  .pcard-thumb .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--bronze);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+  .pcard-body{flex:1;padding:18px 20px;min-width:0}
+  .pcard-body .plabel{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--bronze)}
+  .pcard-body .ptitle{font-family:var(--serif);font-size:23px;line-height:1.1;margin-top:5px}
+  .pcard-body .pmeta{font-size:13px;color:var(--muted);margin-top:6px}
+  .pcard-body .pprice{font-family:var(--serif);font-size:22px;color:var(--navy);margin-top:9px}
+  .pcard-foot{display:flex;align-items:center;gap:8px;padding:12px 20px;border-top:1px solid var(--line);background:#fdfcf9}
+  .imgcount{font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .scoremini{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--bronze);font-weight:700}
+  .editrow{display:none}.editrow.open{display:block;border-top:1px solid var(--line);padding:22px 20px}
+  .subhead{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin:18px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+
+  .imgstrip{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .imgchip{position:relative;width:80px;height:60px;border-radius:2px;background:var(--bronze-soft) center/cover no-repeat;border:1px solid var(--line)}
+  .imgchip button{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;border:none;background:var(--navy);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+
+  .empty{text-align:center;padding:54px 20px;border:1px dashed var(--line);border-radius:3px;color:var(--muted)}
+  .empty .big{font-family:var(--serif);font-size:26px;color:var(--navy);margin-bottom:8px}
+  .status{font-size:13px;margin-top:10px;min-height:18px}
+  .status.err{color:#9a3b2e}.status.ok{color:#3f6b3f}.status.work{color:var(--bronze)}
+  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--navy);color:#fff;padding:14px 24px;border-radius:2px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 12px 44px rgba(14,34,64,.32);transition:opacity .2s,transform .2s;z-index:80;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ===== DOSSIER ===== */
+  #apercu{display:none}
+  .viewbar{position:sticky;top:0;z-index:30;background:rgba(252,251,248,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .viewbar-inner{max-width:1080px;margin:0 auto;padding:13px 28px;display:flex;align-items:center;gap:16px}
+  .langtoggle{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+  .langtoggle button{border:none;background:#fff;padding:7px 13px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em}
+  .langtoggle button.on{background:var(--navy);color:#fff}
+
+  .dossier-hero{position:relative;min-height:72vh;display:flex;align-items:flex-end;background:var(--navy);overflow:hidden}
+  .dossier-hero .bg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02)}
+  .dossier-hero .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,34,64,.30),rgba(14,34,64,.40) 45%,rgba(14,34,64,.82))}
+  .dossier-hero .inner{position:relative;max-width:1080px;margin:0 auto;padding:0 28px 64px;width:100%;color:#fff}
+  .dossier-hero .eyebrow{color:var(--bronze)}
+  .dossier-hero h1{color:#fff;font-size:clamp(38px,7vw,76px);margin-top:18px}
+  .dossier-hero .for{font-family:var(--serif);font-style:italic;font-size:clamp(19px,3vw,25px);color:var(--cream);margin-top:16px}
+  .dossier-hero .intro{max-width:60ch;color:rgba(244,239,230,.82);font-size:16px;line-height:1.7;margin-top:20px}
+
+  .dossier-body{max-width:1080px;margin:0 auto;padding:0 28px}
+  .crit-line{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:30px 0 6px;color:var(--muted);font-size:13px}
+  .crit-line .chip{border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:#fff;color:var(--navy);font-weight:500}
+  .crit-line .lab{letter-spacing:.16em;text-transform:uppercase;font-size:11px;color:var(--bronze);font-weight:700;margin-right:4px}
+
+  .sortbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:22px 0 32px}
+  .sortbar .lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+  .sortbar button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--muted)}
+  .sortbar button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+  .grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;padding-bottom:60px}
+  .cardx{border:1px solid var(--line);border-radius:3px;overflow:hidden;background:#fff;cursor:pointer;transition:box-shadow .2s,transform .2s;display:flex;flex-direction:column}
+  .cardx:hover{box-shadow:0 14px 40px rgba(14,34,64,.10);transform:translateY(-2px)}
+  .cardx .ph{position:relative;aspect-ratio:4/3;background:var(--bronze-soft) center/cover no-repeat}
+  .cardx .ph .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--bronze);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+  .score-pill{position:absolute;top:12px;right:12px;background:rgba(14,34,64,.92);color:#fff;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;letter-spacing:.02em;display:flex;align-items:baseline;gap:5px;backdrop-filter:blur(4px)}
+  .score-pill .pc{color:var(--bronze)}
+  .score-pill small{font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.8}
+  .cardx .cbody{padding:18px 20px 22px;display:flex;flex-direction:column;flex:1}
+  .cardx .clabel{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--bronze)}
+  .cardx h3{font-size:24px;margin-top:6px;line-height:1.1}
+  .cardx .cfacts{font-size:13.5px;color:var(--muted);margin-top:10px;display:flex;flex-wrap:wrap;gap:4px 12px}
+  .cardx .cprice{font-family:var(--serif);font-size:23px;color:var(--bronze);margin-top:auto;padding-top:14px}
+  .cardx .cgo{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--navy);margin-top:12px;font-weight:600}
+
+  /* detail */
+  .detail{max-width:920px;margin:0 auto;padding:0 28px}
+  .backlink{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:30px 0 6px}
+  .backlink:hover{color:var(--navy)}
+  .detail .dfolio{font-family:var(--serif);font-size:16px;color:var(--bronze);margin-top:14px}
+  .detail h1{font-size:clamp(30px,5vw,50px);margin-top:8px}
+  .detail .dloc{color:var(--muted);font-size:15px;margin-top:8px}
+  .detail .dhigh{font-family:var(--serif);font-style:italic;color:var(--navy);font-size:21px;margin-top:16px;padding-left:18px;border-left:2px solid var(--bronze)}
+  .dhero{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bronze-soft);margin-top:26px;border-radius:2px;cursor:zoom-in}
+  .facts{display:flex;flex-wrap:wrap;margin-top:24px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .fact{padding:18px 34px 18px 0;margin-right:34px;border-right:1px solid var(--line)}
+  .fact:last-child{border-right:none;margin-right:0}
+  .fact .v{font-family:var(--serif);font-size:30px;color:var(--navy);line-height:1}
+  .fact .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+  .fact.price .v{color:var(--bronze)}
+  @media(max-width:640px){.fact{padding-right:20px;margin-right:20px}}
+
+  .scorebox{margin-top:40px;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .scorebox .sb-head{display:flex;align-items:center;gap:18px;padding:22px 24px;background:var(--navy);color:#fff}
+  .scorebox .ring{flex-shrink:0;width:74px;height:74px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:26px;font-weight:500}
+  .scorebox .sb-head .t{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--bronze)}
+  .scorebox .sb-head .s{font-family:var(--serif);font-size:24px;margin-top:2px}
+  .checks{padding:6px 24px 14px}
+  .check{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);font-size:15px}
+  .check:last-child{border-bottom:none}
+  .check .mk{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#fff}
+  .check .mk.ok{background:var(--ok)}.check .mk.no{background:var(--no)}
+  .check .cl{flex:1}.check .cv{color:var(--muted);font-size:14px}
+
+  .desc{margin-top:34px;color:#3c3d42;font-size:16.5px;line-height:1.75;white-space:pre-wrap;max-width:68ch}
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px}
+  @media(max-width:640px){.gallery{grid-template-columns:repeat(2,1fr)}}
+  .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bronze-soft);cursor:zoom-in;border-radius:2px}
+
+  .memo{margin-top:44px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--bronze);border-radius:3px;padding:30px 32px}
+  .memo .mhead{display:flex;align-items:baseline;gap:10px;margin-bottom:18px}
+  .memo .mhead .e{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--bronze);font-weight:700}
+  .memo .mhead .n{font-family:var(--serif);font-size:24px}
+  .memo .mblock{margin-bottom:18px}
+  .memo .mblock:last-child{margin-bottom:0}
+  .memo .mt{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:7px}
+  .memo .mtxt{color:#3c3d42;font-size:16px;line-height:1.7;white-space:pre-wrap}
+  .memo .mtxt.pos{border-left:2px solid var(--ok);padding-left:14px}
+  .memo .mtxt.neg{border-left:2px solid var(--no);padding-left:14px}
+  .memo .sign{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--navy);margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+  .detail-foot{padding:50px 0 30px;text-align:center}
+
+  .invite{background:var(--navy);color:#fff}
+  .invite .inner{max-width:980px;margin:0 auto;padding:90px 28px;text-align:center}
+  .invite .eyebrow{color:var(--bronze);display:block;margin-bottom:18px}
+  .invite h2{color:#fff;font-size:clamp(30px,5vw,52px)}
+  .invite .sub{color:rgba(244,239,230,.72);font-size:17px;margin-top:14px}
+  .invite .agent{font-family:var(--serif);font-size:24px;margin-top:40px}
+  .invite .role{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--bronze);margin-top:8px}
+  .invite .contact{color:rgba(244,239,230,.8);font-size:14.5px;margin-top:16px;line-height:1.9}
+  .invite .tagline{color:rgba(244,239,230,.5);font-size:12px;letter-spacing:.08em;margin-top:34px}
+
+  #lightbox{position:fixed;inset:0;background:rgba(8,18,34,.95);z-index:90;display:none;align-items:center;justify-content:center;padding:30px}
+  #lightbox.open{display:flex}
+  #lightbox img{max-width:94vw;max-height:90vh;border-radius:2px;object-fit:contain}
+  #lightbox .close{position:absolute;top:20px;right:26px;color:#fff;font-size:32px;background:none;border:none}
+  #lightbox .nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:42px;background:none;border:none;padding:10px 18px;opacity:.75}
+  #lightbox .nav:hover{opacity:1}#lightbox .prev{left:8px}#lightbox .next{right:8px}
+  @media print{.topbar,.viewbar,.sortbar{display:none}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== ATELIER ===== -->
+<div id="atelier-shell">
+  <div class="topbar"><div class="topbar-inner">
+    <div class="wordmark">Thomas Herremans<span class="sub">Atelier · Sélection privée</span></div>
+    <div class="spacer"></div>
+    <div class="modeswitch">
+      <button id="m-atelier" class="on" onclick="setMode('atelier')">Atelier</button>
+      <button id="m-apercu" onclick="setMode('apercu')">Aperçu client</button>
+    </div>
+    <button class="btn btn-bronze btn-sm" onclick="copyShareLink()">Lien client</button>
+  </div></div>
+
+  <div class="atelier-hero"><div class="inner">
+    <span class="eyebrow">Atelier</span>
+    <h1>Composez une sélection sur mesure.</h1>
+    <p>Collez le lien d'une annonce, renseignez les critères de l'acquéreur, rédigez votre mémorandum — puis partagez un dossier scoré et noté, à l'image de la maison.</p>
+  </div></div>
+
+  <div class="wrap">
+    <div class="section">
+      <div class="section-head"><span class="eyebrow">Espace conseiller</span><h2>Clients &amp; publication</h2></div>
+      <div class="panel">
+        <div id="supaConnect">
+          <p class="hint">Optionnel. Connectez votre espace pour mémoriser vos clients et publier des liens courts et permanents. Sans connexion, le bouton « Lien client » fonctionne toujours.</p>
+          <div class="row" style="margin-top:14px">
+            <div class="grow"><input id="editorToken" type="password" placeholder="Clé conseiller (EDITOR_TOKEN)"/></div>
+            <button class="btn btn-primary btn-sm" onclick="connectEditor()">Connecter</button>
+          </div>
+          <div class="status" id="supaStatus"></div>
+        </div>
+        <div id="supaTools" style="display:none">
+          <div class="grid2">
+            <label class="field"><span class="lab">Client</span><select id="clientSelect" onchange="onClientChange()"></select></label>
+            <div style="display:flex;align-items:flex-end;margin-bottom:16px"><button class="btn btn-ghost btn-sm" onclick="saveClient()">Enregistrer ce client</button></div>
+          </div>
+          <div class="row" style="align-items:center;gap:14px;flex-wrap:wrap">
+            <button class="btn btn-bronze btn-sm" onclick="publishDossier()">Publier le dossier</button>
+            <span class="hint" id="shareShort" style="margin:0"></span>
+          </div>
+          <div class="status" id="supaStatus2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><span class="eyebrow">Ajouter un bien</span><h2>Depuis un lien</h2></div>
+      <div class="panel">
+        <p class="hint">Collez l'URL de la page du mandataire (la source non protégée). Si l'extraction n'aboutit pas, le bien est créé pour une saisie manuelle.</p>
+        <div class="row" style="margin-top:16px">
+          <div class="grow"><input id="urlInput" type="url" placeholder="https://www.agence-exemple.fr/annonce/…" /></div>
+          <button class="btn btn-primary btn-sm" id="extractBtn" onclick="addFromUrl()">Extraire</button>
+          <button class="btn btn-ghost btn-sm" onclick="addBlank()">Manuel</button>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><span class="eyebrow">Page de garde</span><h2>L'introduction du dossier</h2></div>
+      <div class="panel">
+        <div class="grid2">
+          <label class="field"><span class="lab">Préparé pour</span><input id="clientName" placeholder="Madame et Monsieur Dupont"/></label>
+          <label class="field"><span class="lab">Périmètre</span><input id="coverPlace" placeholder="Paris 2ᵉ · 11ᵉ"/></label>
+        </div>
+        <label class="field"><span class="lab">Mot d'introduction</span><textarea id="coverIntro" rows="3" placeholder="Voici une première sélection répondant à vos critères. Je demeure à votre disposition pour organiser les visites."></textarea></label>
+        <div class="grid2">
+          <label class="field"><span class="lab">Conseiller</span><input id="agentName"/></label>
+          <label class="field"><span class="lab">Maison / rôle</span><input id="agentRole"/></label>
+        </div>
+        <label class="field"><span class="lab">Contact</span><input id="agentContact"/></label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><span class="eyebrow">Critères de l'acquéreur</span><h2>La base du score</h2></div>
+      <div class="panel">
+        <p class="hint">Renseignez ce qui compte pour ce client. Le score (%) mesure la part des critères satisfaits par chaque bien. Laissez vide ce qui ne s'applique pas.</p>
+        <div class="grid4" style="margin-top:16px">
+          <label class="field"><span class="lab">Budget max (€)</span><input id="cBudget" inputmode="numeric" placeholder="1 540 000"/></label>
+          <label class="field"><span class="lab">Surface min (m²)</span><input id="cSurface" inputmode="numeric" placeholder="70"/></label>
+          <label class="field"><span class="lab">Pièces min</span><input id="cPieces" inputmode="numeric" placeholder="3"/></label>
+          <label class="field"><span class="lab">Chambres min</span><input id="cChambres" inputmode="numeric" placeholder="2"/></label>
+        </div>
+        <label class="field"><span class="lab">Secteurs souhaités (séparés par des virgules)</span><input id="cSecteurs" placeholder="11e, Bastille, Faidherbe"/></label>
+        <label class="field"><span class="lab">Indispensables (mots-clés, virgules)</span><input id="cMust" placeholder="ascenseur, extérieur, calme"/></label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><span class="eyebrow">Biens disponibles</span><h2>La sélection</h2></div>
+      <div class="plist" id="plist"></div>
+      <div class="empty" id="emptyState"><div class="big">Aucun bien pour le moment</div><div>Collez un lien d'annonce plus haut pour commencer.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APERÇU CLIENT ===== -->
+<div id="apercu">
+  <div class="viewbar"><div class="viewbar-inner">
+    <div class="wordmark" style="font-size:18px" id="vb-name">Thomas Herremans</div>
+    <div class="spacer" style="flex:1"></div>
+    <div class="langtoggle"><button id="lang-fr" class="on" onclick="setLang('fr')">FR</button><button id="lang-en" onclick="setLang('en')">EN</button></div>
+    <button class="btn btn-ghost btn-sm" id="vb-atelier" onclick="setMode('atelier')">Atelier</button>
+  </div></div>
+  <div id="dossier"></div>
+</div>
+
+<div id="lightbox" onclick="if(event.target.id==='lightbox')closeLB()">
+  <button class="close" onclick="closeLB()">&times;</button>
+  <button class="nav prev" onclick="lbStep(-1)">&#8249;</button>
+  <img id="lbimg" src="" alt="" />
+  <button class="nav next" onclick="lbStep(1)">&#8250;</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let state = {
+  cover:{ client:"", place:"", intro:"", agentName:"Thomas Herremans", agentRole:"Conseil immobilier international", agentContact:"thomas@thomasherremans.com · +33 7 83 45 04 11" },
+  criteria:{ budget:"", surfaceMin:"", piecesMin:"", chambresMin:"", secteurs:"", must:"" },
+  props:[]
+};
+let lang="fr", editing=null, lbList=[], lbIndex=0;
+let view={page:"index", id:null}, sortKey=null;
+
+const T={
+  fr:{ title:"Une sélection pour vous", prep:"Préparé pour", price:"Prix", surface:"Surface", pieces:"Pièces", chambres:"Chambres",
+    sort:"Trier par", sPrice:"Prix", sChambres:"Chambres", sSurface:"Surface", sScore:"Correspondance",
+    match:"Correspondance", criteria:"Critères", view:"Voir le bien", back:"La sélection", folio:"Bien", of:"sur",
+    cBudget:"Budget", cSurface:"Surface", cPieces:"Pièces", cChambres:"Chambres", cSecteur:"Secteur",
+    memoE:"Le mot de", strengths:"Les points forts", watch:"Les points de vigilance", priceOp:"Mon avis sur le prix",
+    invite:"Commençons par une conversation", sub:"Confidentielle, sans engagement.", reach:"À votre disposition",
+    tagline:"Conseil immobilier international depuis 2004." },
+  en:{ title:"A selection for you", prep:"Prepared for", price:"Price", surface:"Surface", pieces:"Rooms", chambres:"Bedrooms",
+    sort:"Sort by", sPrice:"Price", sChambres:"Bedrooms", sSurface:"Surface", sScore:"Match",
+    match:"Match", criteria:"Criteria", view:"View property", back:"The selection", folio:"Property", of:"of",
+    cBudget:"Budget", cSurface:"Surface", cPieces:"Rooms", cChambres:"Bedrooms", cSecteur:"Area",
+    memoE:"A word from", strengths:"What works", watch:"Points to watch", priceOp:"My view on the price",
+    invite:"Let us begin with a conversation", sub:"Confidential, with no obligation.", reach:"At your service",
+    tagline:"International real estate advisory since 2004." }
+};
+
+const uid=()=>Math.random().toString(36).slice(2,9);
+const $=id=>document.getElementById(id);
+const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function num(s){ if(s==null)return null; const m=String(s).match(/\d[\d\s.\u202f]*/); if(!m)return null; const n=parseInt(m[0].replace(/[^\d]/g,""),10); return isNaN(n)?null:n; }
+function fmtEuro(n){ return n.toLocaleString("fr-FR")+" €"; }
+
+/* ---- extraction ---- */
+async function addFromUrl(){
+  const url=$("urlInput").value.trim();
+  if(!url){ setStatus("Collez d'abord une URL.","err"); return; }
+  let host=""; try{ host=new URL(url).hostname.replace(/^www\./,""); }catch(e){ setStatus("URL invalide.","err"); return; }
+  setStatus("Extraction en cours…","work"); $("extractBtn").disabled=true;
+  let data=null, why="";
+  try{
+    const r=await fetch("/api/extract?url="+encodeURIComponent(url));
+    if(r.ok){ data=await r.json(); }
+    else if(r.status===404){ why="Service d'extraction introuvable (404) — vérifiez api/extract.js."; }
+    else{ why="Le service a répondu "+r.status+" — voir les logs Vercel."; }
+  }catch(e){ why="Aucune réponse du serveur — l'extraction ne fonctionne qu'une fois déployée."; }
+  $("extractBtn").disabled=false;
+  if(data&&data.error==="blocked"){ why=host+" bloque l'extraction (anti-robot)."; data=null; }
+  else if(data&&data.error){ why="Extraction impossible ("+data.error+")."; data=null; }
+  const p=newProp(url,data);
+  state.props.push(p); $("urlInput").value="";
+  if(data&&(p.title||p.images.length)){ setStatus(p.title?"Bien ajouté — vérifiez puis complétez.":"Photos récupérées — titre à compléter.","ok"); }
+  else{ setStatus((why||"Extraction indisponible pour ce site.")+(why&&why.indexOf("déployée")>-1?"":" Saisie manuelle ouverte."),"err"); editing=p.id; }
+  render();
+}
+function addBlank(){ const url=$("urlInput").value.trim(); const p=newProp(url,null); editing=p.id; state.props.push(p); $("urlInput").value=""; setStatus("",""); render(); }
+function newProp(url,data){ return { id:uid(), url,
+  title:(data&&data.title)||"", price:(data&&data.price)||"", location:(data&&data.location)||"",
+  surface:(data&&data.surface)||"", rooms:(data&&data.rooms)||"", bedrooms:"", description:(data&&data.description)||"",
+  highlight:"", pros:"", cons:"", priceNote:"",
+  images:(data&&Array.isArray(data.images))?data.images.slice(0,12):[] }; }
+
+/* ---- AI memorandum ---- */
+async function aiMemo(id){
+  const p=state.props.find(x=>x.id===id); if(!p)return; collect();
+  const btn=document.getElementById("aiBtn-"+id); if(btn){ btn.disabled=true; btn.innerHTML="&#10022; Rédaction…"; }
+  try{
+    const r=await fetch("/api/memo",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({property:p,criteria:state.criteria,lang})});
+    const data=await r.json().catch(()=>null);
+    if(r.ok&&data&&!data.error){
+      if(data.pros)p.pros=data.pros; if(data.cons)p.cons=data.cons; if(data.priceNote)p.priceNote=data.priceNote;
+      render(); toast("Mémorandum rédigé — à relire");
+    }else{
+      if(btn){ btn.disabled=false; btn.innerHTML="&#10022; Rédiger avec l'IA"; }
+      const msg=(data&&data.hint==="no_key")?"clé ANTHROPIC_API_KEY absente":((data&&data.error)||("erreur "+r.status));
+      toast("IA indisponible — "+msg);
+    }
+  }catch(e){ if(btn){ btn.disabled=false; btn.innerHTML="&#10022; Rédiger avec l'IA"; } toast("IA injoignable — déployez d'abord"); }
+}
+
+/* ---- mutations ---- */
+function field(id,key,val){ const p=state.props.find(x=>x.id===id); if(p)p[key]=val; }
+function toggleEdit(id){ editing=(editing===id)?null:id; render(); }
+function remove(id){ state.props=state.props.filter(x=>x.id!==id); if(editing===id)editing=null; render(); }
+function move(id,dir){ const i=state.props.findIndex(x=>x.id===id),j=i+dir; if(j<0||j>=state.props.length)return; [state.props[i],state.props[j]]=[state.props[j],state.props[i]]; render(); }
+function addImage(id){ const inp=$("imgurl-"+id),v=inp.value.trim(); if(!v)return; state.props.find(x=>x.id===id).images.push(v); inp.value=""; render(); }
+function delImage(id,idx){ state.props.find(x=>x.id===id).images.splice(idx,1); render(); }
+
+/* ---- atelier render ---- */
+function render(){
+  $("emptyState").style.display=state.props.length?"none":"block";
+  $("plist").innerHTML=state.props.map(p=>{
+    const hero=p.images[0], open=editing===p.id;
+    return `<div class="pcard"><div class="pcard-top">
+      <div class="pcard-thumb" style="${hero?`background-image:url('${esc(hero)}')`:''}">${hero?'':'<span class="noimg">Sans photo</span>'}</div>
+      <div class="pcard-body">
+        ${p.location?`<div class="plabel">${esc(p.location)}</div>`:''}
+        <div class="ptitle">${esc(p.title)||'<span style="color:var(--muted)">Bien sans titre</span>'}</div>
+        <div class="pmeta">${[esc(p.surface),esc(p.rooms),p.bedrooms?esc(p.bedrooms)+" ch.":""].filter(Boolean).join(" · ")||"&nbsp;"}</div>
+        <div class="pprice">${esc(p.price)||""}</div>
+      </div></div>
+      <div class="pcard-foot">
+        <button class="icon-btn" onclick="move('${p.id}',-1)">&#8593;</button>
+        <button class="icon-btn" onclick="move('${p.id}',1)">&#8595;</button>
+        <span class="imgcount">${p.images.length} photo${p.images.length>1?'s':''}</span>
+        ${(p.pros||p.cons||p.priceNote)?'<span class="scoremini">· mémo ✓</span>':''}
+        <span class="spacer"></span>
+        <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${p.id}')">${open?'Fermer':'Modifier'}</button>
+        <button class="icon-btn" onclick="remove('${p.id}')">&#215;</button>
+      </div>
+      <div class="editrow ${open?'open':''}">${open?editor(p):''}</div></div>`;
+  }).join("");
+}
+function editor(p){
+  return `
+    <label class="field"><span class="lab">Titre</span><input value="${esc(p.title)}" oninput="field('${p.id}','title',this.value)" placeholder="Appartement aux volumes généreux"/></label>
+    <div class="grid4">
+      <label class="field"><span class="lab">Prix</span><input value="${esc(p.price)}" oninput="field('${p.id}','price',this.value)" placeholder="1 490 000 €"/></label>
+      <label class="field"><span class="lab">Surface</span><input value="${esc(p.surface)}" oninput="field('${p.id}','surface',this.value)" placeholder="78 m²"/></label>
+      <label class="field"><span class="lab">Pièces</span><input value="${esc(p.rooms)}" oninput="field('${p.id}','rooms',this.value)" placeholder="3 pièces"/></label>
+      <label class="field"><span class="lab">Chambres</span><input value="${esc(p.bedrooms)}" oninput="field('${p.id}','bedrooms',this.value)" placeholder="2"/></label>
+    </div>
+    <label class="field"><span class="lab">Localisation</span><input value="${esc(p.location)}" oninput="field('${p.id}','location',this.value)" placeholder="Faidherbe-Chaligny, Paris 11ᵉ"/></label>
+    <label class="field"><span class="lab">Coup de cœur (une ligne)</span><input value="${esc(p.highlight)}" oninput="field('${p.id}','highlight',this.value)" placeholder="Étage élevé, lumière traversante, sans vis-à-vis"/></label>
+    <label class="field"><span class="lab">Description</span><textarea rows="3" oninput="field('${p.id}','description',this.value)" placeholder="Présentation factuelle du bien…">${esc(p.description)}</textarea></label>
+
+    <div class="subhead">Votre mémorandum (signé de votre nom)</div>
+    <div class="row" style="margin:-2px 0 16px;align-items:center"><button class="btn btn-ghost btn-sm" id="aiBtn-${p.id}" onclick="aiMemo('${p.id}')">&#10022; Rédiger avec l'IA</button><span class="hint" style="margin:0">Un brouillon dans votre voix, à relire et ajuster.</span></div>
+    <label class="field"><span class="lab">Les points forts</span><textarea rows="2" oninput="field('${p.id}','pros',this.value)" placeholder="Ce qui distingue ce bien…">${esc(p.pros)}</textarea></label>
+    <label class="field"><span class="lab">Les points de vigilance</span><textarea rows="2" oninput="field('${p.id}','cons',this.value)" placeholder="Ce sur quoi rester attentif…">${esc(p.cons)}</textarea></label>
+    <label class="field"><span class="lab">Mon avis sur le prix</span><textarea rows="2" oninput="field('${p.id}','priceNote',this.value)" placeholder="Cohérent avec le marché ? Marge de négociation ?">${esc(p.priceNote)}</textarea></label>
+
+    <div class="subhead">Photos</div>
+    <div class="imgstrip">${p.images.map((src,idx)=>`<div class="imgchip" style="background-image:url('${esc(src)}')"><button onclick="delImage('${p.id}',${idx})">&times;</button></div>`).join("")}</div>
+    <div class="row" style="margin-top:12px"><div class="grow"><input id="imgurl-${p.id}" placeholder="Coller l'URL d'une photo" onkeydown="if(event.key==='Enter')addImage('${p.id}')"/></div>
+      <button class="btn btn-ghost btn-sm" onclick="addImage('${p.id}')">Ajouter</button></div>`;
+}
+
+/* ---- scoring ---- */
+function hasCriteria(){ const c=state.criteria; return !!(num(c.budget)||num(c.surfaceMin)||num(c.piecesMin)||num(c.chambresMin)||(c.secteurs||"").trim()||(c.must||"").trim()); }
+function score(p){
+  const c=state.criteria,t=T[lang],checks=[];
+  const add=(label,ok,got)=>checks.push({label,ok,got:got==null?"":String(got)});
+  if(num(c.budget)){ const pr=num(p.price); add(t.cBudget+" ≤ "+fmtEuro(num(c.budget)), pr!=null&&pr<=num(c.budget), pr!=null?fmtEuro(pr):"—"); }
+  if(num(c.surfaceMin)){ const s=num(p.surface); add(t.cSurface+" ≥ "+num(c.surfaceMin)+" m²", s!=null&&s>=num(c.surfaceMin), s!=null?s+" m²":"—"); }
+  if(num(c.piecesMin)){ const r=num(p.rooms); add(t.cPieces+" ≥ "+num(c.piecesMin), r!=null&&r>=num(c.piecesMin), r!=null?r:"—"); }
+  if(num(c.chambresMin)){ const b=num(p.bedrooms); add(t.cChambres+" ≥ "+num(c.chambresMin), b!=null&&b>=num(c.chambresMin), b!=null?b:"—"); }
+  const sect=(c.secteurs||"").split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);
+  if(sect.length){ const hay=((p.location||"")+" "+(p.title||"")).toLowerCase(); add(t.cSecteur, sect.some(s=>hay.includes(s)), p.location||"—"); }
+  (c.must||"").split(",").map(x=>x.trim()).filter(Boolean).forEach(k=>{ const hay=((p.description||"")+" "+(p.title||"")+" "+(p.highlight||"")+" "+(p.pros||"")).toLowerCase(); add(k, hay.includes(k.toLowerCase()), ""); });
+  if(!checks.length) return {score:null,checks:[]};
+  return { score:Math.round(100*checks.filter(x=>x.ok).length/checks.length), checks };
+}
+function sortedProps(){
+  let arr=state.props.map((p,i)=>({p,i}));
+  const k=sortKey;
+  if(k==='prix') arr.sort((a,b)=>(num(a.p.price)??Infinity)-(num(b.p.price)??Infinity));
+  else if(k==='surface') arr.sort((a,b)=>(num(b.p.surface)??-1)-(num(a.p.surface)??-1));
+  else if(k==='chambres') arr.sort((a,b)=>(num(b.p.bedrooms)??-1)-(num(a.p.bedrooms)??-1));
+  else if(k==='score') arr.sort((a,b)=>(score(b.p).score??-1)-(score(a.p).score??-1));
+  return arr;
+}
+
+/* ---- dossier render ---- */
+function renderClient(){ view.page==='detail'?renderDetail(view.id):renderIndex(); window.scrollTo(0,0); }
+function renderIndex(){
+  const t=T[lang],c=state.cover;
+  $("vb-name").textContent=c.agentName||"Thomas Herremans";
+  const heroImg=state.props.find(p=>p.images[0]);
+  const showScore=hasCriteria();
+  const cr=state.criteria, chips=[];
+  if(num(cr.budget))chips.push("≤ "+fmtEuro(num(cr.budget)));
+  if(num(cr.surfaceMin))chips.push("≥ "+num(cr.surfaceMin)+" m²");
+  if(num(cr.piecesMin))chips.push("≥ "+num(cr.piecesMin)+" "+t.pieces.toLowerCase());
+  if(num(cr.chambresMin))chips.push("≥ "+num(cr.chambresMin)+" "+t.chambres.toLowerCase());
+  (cr.secteurs||"").split(",").map(x=>x.trim()).filter(Boolean).forEach(s=>chips.push(s));
+
+  const hero=`<div class="dossier-hero">
+    ${heroImg?`<div class="bg" style="background-image:url('${esc(heroImg.images[0])}')"></div>`:''}
+    <div class="scrim"></div>
+    <div class="inner">
+      <span class="eyebrow">${esc(c.place)||"Sélection privée"}</span>
+      <h1>${esc(t.title)}</h1>
+      ${c.client?`<div class="for">${t.prep} ${esc(c.client)}</div>`:''}
+      ${c.intro?`<p class="intro">${esc(c.intro)}</p>`:''}
+    </div></div>`;
+
+  const critLine=(showScore&&chips.length)?`<div class="crit-line"><span class="lab">${t.criteria}</span>${chips.map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div>`:'';
+
+  const sortOpts=[["prix",t.sPrice],["chambres",t.sChambres],["surface",t.sSurface]];
+  if(showScore)sortOpts.push(["score",t.sScore]);
+  const sortbar=`<div class="sortbar"><span class="lab">${t.sort}</span>${sortOpts.map(([k,l])=>`<button class="${sortKey===k?'on':''}" onclick="setSort('${k}')">${l}</button>`).join("")}</div>`;
+
+  const cards=sortedProps().map(({p,i})=>{
+    const sc=showScore?score(p):{score:null};
+    const hero=p.images[0];
+    const facts=[esc(p.surface),esc(p.rooms),p.bedrooms?esc(p.bedrooms)+" "+t.chambres.toLowerCase():""].filter(Boolean);
+    return `<div class="cardx" onclick="openDetail('${p.id}')">
+      <div class="ph" style="${hero?`background-image:url('${esc(hero)}')`:''}">
+        ${hero?'':'<span class="noimg">Sans photo</span>'}
+        ${sc.score!=null?`<div class="score-pill"><span class="pc">${sc.score}%</span><small>${t.match}</small></div>`:''}
+      </div>
+      <div class="cbody">
+        ${p.location?`<div class="clabel">${esc(p.location)}</div>`:''}
+        <h3>${esc(p.title)||'Bien'}</h3>
+        ${facts.length?`<div class="cfacts">${facts.map(f=>`<span>${f}</span>`).join("")}</div>`:''}
+        <div class="cprice">${esc(p.price)||""}</div>
+        <div class="cgo">${t.view} &#8594;</div>
+      </div></div>`;
+  }).join("");
+
+  const invite=inviteBlock();
+  $("dossier").innerHTML=hero+`<div class="dossier-body">${critLine}${sortbar}<div class="grid-cards">${cards}</div></div>`+invite;
+}
+
+function renderDetail(id){
+  const t=T[lang],c=state.cover;
+  const idx=state.props.findIndex(p=>p.id===id); const p=state.props[idx]; if(!p){ view.page='index'; return renderIndex(); }
+  const showScore=hasCriteria(); const sc=showScore?score(p):{score:null,checks:[]};
+  const facts=[];
+  if(p.price)facts.push(`<div class="fact price"><div class="v">${esc(p.price)}</div><div class="k">${t.price}</div></div>`);
+  if(p.surface)facts.push(`<div class="fact"><div class="v">${esc(p.surface)}</div><div class="k">${t.surface}</div></div>`);
+  if(p.rooms)facts.push(`<div class="fact"><div class="v">${esc(p.rooms)}</div><div class="k">${t.pieces}</div></div>`);
+  if(p.bedrooms)facts.push(`<div class="fact"><div class="v">${esc(p.bedrooms)}</div><div class="k">${t.chambres}</div></div>`);
+
+  const ring=sc.score!=null?`<div class="ring" style="background:conic-gradient(var(--bronze) ${sc.score*3.6}deg, rgba(255,255,255,.18) 0)"><span style="background:var(--navy);width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center">${sc.score}<span style="font-size:13px">%</span></span></div>`:'';
+  const scorebox=sc.score!=null?`<div class="scorebox">
+    <div class="sb-head">${ring}<div><div class="t">${t.match}</div><div class="s">${sc.checks.filter(x=>x.ok).length} / ${sc.checks.length} ${t.criteria.toLowerCase()}</div></div></div>
+    <div class="checks">${sc.checks.map(ch=>`<div class="check"><span class="mk ${ch.ok?'ok':'no'}">${ch.ok?'&#10003;':'&#10005;'}</span><span class="cl">${esc(ch.label)}</span><span class="cv">${esc(ch.got)}</span></div>`).join("")}</div>
+  </div>`:'';
+
+  const memoOn=p.pros||p.cons||p.priceNote;
+  const firstName=(c.agentName||"Thomas").split(" ")[0];
+  const memo=memoOn?`<div class="memo">
+    <div class="mhead"><span class="e">${t.memoE}</span><span class="n">${esc(firstName)}</span></div>
+    ${p.pros?`<div class="mblock"><div class="mt">${t.strengths}</div><div class="mtxt pos">${esc(p.pros)}</div></div>`:''}
+    ${p.cons?`<div class="mblock"><div class="mt">${t.watch}</div><div class="mtxt neg">${esc(p.cons)}</div></div>`:''}
+    ${p.priceNote?`<div class="mblock"><div class="mt">${t.priceOp}</div><div class="mtxt">${esc(p.priceNote)}</div></div>`:''}
+    <div class="sign">— ${esc(c.agentName||"")}</div>
+  </div>`:'';
+
+  const gallery=p.images.length?`<div class="gallery">${p.images.map((src,k)=>`<img src="${esc(src)}" onclick="openLB('${p.id}',${k})" alt=""/>`).join("")}</div>`:'';
+
+  $("dossier").innerHTML=`<div class="detail">
+    <a class="backlink" onclick="backIndex()">&#8592; ${t.back}</a>
+    <div class="dfolio">${t.folio} ${String(idx+1).padStart(2,'0')} <span style="color:var(--muted)">/ ${t.of} ${String(state.props.length).padStart(2,'0')}</span></div>
+    <h1>${esc(p.title)||'Bien'}</h1>
+    ${p.location?`<div class="dloc">${esc(p.location)}</div>`:''}
+    ${p.highlight?`<div class="dhigh">${esc(p.highlight)}</div>`:''}
+    ${p.images[0]?`<img class="dhero" src="${esc(p.images[0])}" onclick="openLB('${p.id}',0)" alt=""/>`:''}
+    ${facts.length?`<div class="facts">${facts.join("")}</div>`:''}
+    ${scorebox}
+    ${p.description?`<div class="desc">${esc(p.description)}</div>`:''}
+    ${gallery}
+    ${memo}
+    <div class="detail-foot"><a class="btn btn-ghost" onclick="backIndex()">&#8592; ${t.back}</a></div>
+  </div>`+inviteBlock();
+}
+
+function inviteBlock(){ const t=T[lang],c=state.cover; return `<div class="invite"><div class="inner">
+  <span class="eyebrow">${t.reach}</span><h2>${t.invite}</h2><p class="sub">${t.sub}</p>
+  ${c.agentName?`<div class="agent">${esc(c.agentName)}</div>`:''}
+  ${c.agentRole?`<div class="role">${esc(c.agentRole)}</div>`:''}
+  ${c.agentContact?`<div class="contact">${esc(c.agentContact)}</div>`:''}
+  <div class="tagline">${t.tagline}</div></div></div>`; }
+
+function openDetail(id){ view={page:'detail',id}; renderClient(); }
+function backIndex(){ view={page:'index',id:null}; renderClient(); }
+function setSort(k){ sortKey=(sortKey===k?null:k); renderIndex(); }
+
+/* ---- mode + lang ---- */
+function setMode(m){ collect(); const a=m!=='apercu';
+  $("atelier-shell").style.display=a?"block":"none"; $("apercu").style.display=a?"none":"block";
+  $("m-atelier").classList.toggle("on",a); $("m-apercu").classList.toggle("on",!a);
+  if(!a){ if(sortKey===null&&hasCriteria())sortKey='score'; view={page:'index',id:null}; renderClient(); }
+  window.scrollTo(0,0);
+}
+function setLang(l){ lang=l; $("lang-fr").classList.toggle("on",l==='fr'); $("lang-en").classList.toggle("on",l==='en'); renderClient(); }
+
+/* ---- persistence via URL ---- */
+function collect(){
+  state.cover={ client:$("clientName").value, place:$("coverPlace").value, intro:$("coverIntro").value,
+    agentName:$("agentName").value, agentRole:$("agentRole").value, agentContact:$("agentContact").value };
+  state.criteria={ budget:$("cBudget").value, surfaceMin:$("cSurface").value, piecesMin:$("cPieces").value,
+    chambresMin:$("cChambres").value, secteurs:$("cSecteurs").value, must:$("cMust").value };
+}
+function fillForm(){
+  const c=state.cover,cr=state.criteria;
+  $("clientName").value=c.client||""; $("coverPlace").value=c.place||""; $("coverIntro").value=c.intro||"";
+  $("agentName").value=c.agentName||""; $("agentRole").value=c.agentRole||""; $("agentContact").value=c.agentContact||"";
+  $("cBudget").value=cr.budget||""; $("cSurface").value=cr.surfaceMin||""; $("cPieces").value=cr.piecesMin||"";
+  $("cChambres").value=cr.chambresMin||""; $("cSecteurs").value=cr.secteurs||""; $("cMust").value=cr.must||"";
+}
+function encode(){ collect(); return LZString.compressToEncodedURIComponent(JSON.stringify(state)); }
+function copyShareLink(){ const link=location.origin+location.pathname+"?d="+encode()+"#view";
+  navigator.clipboard.writeText(link).then(()=>toast("Lien client copié"),()=>prompt("Lien client :",link)); }
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2600); }
+function setStatus(m,cls){ const s=$("status"); s.textContent=m; s.className="status "+(cls||""); }
+
+/* ---- lightbox ---- */
+function openLB(pid,ii){ const p=state.props.find(x=>x.id===pid); lbList=p.images; lbIndex=ii; $("lbimg").src=lbList[ii]; $("lightbox").classList.add("open"); }
+function closeLB(){ $("lightbox").classList.remove("open"); }
+function lbStep(d){ if(!lbList.length)return; lbIndex=(lbIndex+d+lbList.length)%lbList.length; $("lbimg").src=lbList[lbIndex]; }
+document.addEventListener("keydown",e=>{ if(!$("lightbox").classList.contains("open"))return; if(e.key==="Escape")closeLB(); if(e.key==="ArrowLeft")lbStep(-1); if(e.key==="ArrowRight")lbStep(1); });
+
+/* ---- Supabase: clients & published dossiers ---- */
+let editorToken="", clientsCache=[], currentClientId="", currentDossierId="", clientOnly=false;
+const emptyCriteria=()=>({budget:"",surfaceMin:"",piecesMin:"",chambresMin:"",secteurs:"",must:""});
+function normalizeState(s){ s=s||{}; s.criteria=Object.assign(emptyCriteria(),s.criteria||{});
+  s.cover=Object.assign({client:"",place:"",intro:"",agentName:"Thomas Herremans",agentRole:"Conseil immobilier international",agentContact:""},s.cover||{});
+  s.props=Array.isArray(s.props)?s.props:[]; return s; }
+function tokenHeaders(){ return {"Content-Type":"application/json","Authorization":"Bearer "+editorToken}; }
+function supaMsg(el,m,cls){ if(!el)return; el.textContent=m; el.className="status "+(cls||""); }
+
+async function connectEditor(){
+  editorToken=$("editorToken").value.trim();
+  if(!editorToken){ supaMsg($("supaStatus"),"Saisissez la clé conseiller.","err"); return; }
+  supaMsg($("supaStatus"),"Connexion…","work");
+  try{
+    const r=await fetch("/api/clients",{headers:tokenHeaders()});
+    if(r.status===401){ supaMsg($("supaStatus"),"Clé refusée.","err"); return; }
+    if(!r.ok){ const d=await r.json().catch(()=>({})); supaMsg($("supaStatus"),d.error==="not_configured"?"Supabase non configuré (variables d'environnement manquantes).":"Erreur "+r.status,"err"); return; }
+    clientsCache=await r.json(); try{ sessionStorage.setItem("qre_token",editorToken); }catch(e){}
+    $("supaConnect").style.display="none"; $("supaTools").style.display="block"; fillClientSelect();
+  }catch(e){ supaMsg($("supaStatus"),"Service injoignable — déployez d'abord.","err"); }
+}
+async function autoConnect(){ try{ const r=await fetch("/api/clients",{headers:tokenHeaders()}); if(r.ok){ clientsCache=await r.json(); $("supaConnect").style.display="none"; $("supaTools").style.display="block"; fillClientSelect(); } }catch(e){} }
+function fillClientSelect(){ const sel=$("clientSelect"); if(!sel)return; sel.innerHTML='<option value="">— Nouveau client —</option>'+clientsCache.map(c=>`<option value="${c.id}" ${c.id===currentClientId?'selected':''}>${esc(c.name||'(sans nom)')}</option>`).join(""); }
+function onClientChange(){ const id=$("clientSelect").value; currentClientId=id; currentDossierId="";
+  const c=clientsCache.find(x=>x.id===id);
+  if(c){ state.criteria=Object.assign(emptyCriteria(),c.criteria||{}); state.cover.client=c.name||state.cover.client; fillForm(); supaMsg($("supaStatus2"),"Critères chargés"+(c.name?" pour "+c.name:"")+".","ok"); }
+  else supaMsg($("supaStatus2"),"Nouveau client.","");
+}
+async function saveClient(){ collect(); const name=state.cover.client||"(sans nom)"; supaMsg($("supaStatus2"),"Enregistrement…","work");
+  try{ const r=await fetch("/api/clients",{method:"POST",headers:tokenHeaders(),body:JSON.stringify({id:currentClientId||undefined,name,criteria:state.criteria})});
+    const d=await r.json(); if(r.ok&&d&&!d.error){ currentClientId=d.id; const r2=await fetch("/api/clients",{headers:tokenHeaders()}); clientsCache=await r2.json(); fillClientSelect(); supaMsg($("supaStatus2"),"Client enregistré.","ok"); }
+    else supaMsg($("supaStatus2"),"Échec — "+((d&&d.error)||r.status),"err");
+  }catch(e){ supaMsg($("supaStatus2"),"Service injoignable.","err"); } }
+async function publishDossier(){ collect(); if(!state.props.length){ supaMsg($("supaStatus2"),"Ajoutez au moins un bien.","err"); return; } supaMsg($("supaStatus2"),"Publication…","work");
+  try{ const r=await fetch("/api/dossier",{method:"POST",headers:tokenHeaders(),body:JSON.stringify({id:currentDossierId||undefined,client_id:currentClientId||null,title:state.cover.client||state.cover.place||"",data:state})});
+    const d=await r.json(); if(r.ok&&d&&d.id){ currentDossierId=d.id; const link=location.origin+"/d/"+d.id;
+      $("shareShort").innerHTML=`<a href="${link}" target="_blank" style="color:var(--bronze);font-weight:700">${link}</a>`;
+      navigator.clipboard.writeText(link).then(()=>toast("Lien court copié"),()=>{}); supaMsg($("supaStatus2"),"Dossier publié — lien court prêt.","ok"); }
+    else supaMsg($("supaStatus2"),"Échec — "+((d&&d.error)||r.status),"err");
+  }catch(e){ supaMsg($("supaStatus2"),"Service injoignable.","err"); } }
+
+function applyClientOnly(){ if(clientOnly){ const b=$("vb-atelier"); if(b)b.style.display="none"; } }
+async function loadPublished(id){
+  try{ const r=await fetch("/api/dossier?id="+encodeURIComponent(id)); if(r.ok){ const d=await r.json(); if(d&&d.data){ state=normalizeState(d.data); currentDossierId=id; } } }catch(e){}
+  fillForm(); render(); applyClientOnly(); setMode('apercu');
+}
+
+/* ---- boot ---- */
+(function init(){
+  try{ const tk=sessionStorage.getItem("qre_token"); if(tk)editorToken=tk; }catch(e){}
+  const path=location.pathname.match(/^\/d\/([A-Za-z0-9]+)/);
+  if(path){ clientOnly=true; fillForm(); render(); loadPublished(path[1]); return; }
+  const d=new URLSearchParams(location.search).get("d");
+  if(d){ try{ const l=JSON.parse(LZString.decompressFromEncodedURIComponent(d)); if(l&&l.props) state=normalizeState(l); }catch(e){} }
+  fillForm(); render();
+  if(editorToken) autoConnect();
+  if(location.hash==="#view"){ clientOnly=true; setMode('apercu'); }
+  applyClientOnly();
+})();
+</script>
+</body>
+</html>
